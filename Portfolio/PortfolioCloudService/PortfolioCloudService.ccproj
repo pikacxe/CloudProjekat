@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>2.9</ProductVersion>
+    <ProjectGuid>6de5f8b5-86ab-4bec-a111-61d3ec4a03be</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PortfolioCloudService</RootNamespace>
+    <AssemblyName>PortfolioCloudService</AssemblyName>
+    <StartDevelopmentStorage>True</StartDevelopmentStorage>
+    <ARMDeployment>True</ARMDeployment>
+    <Name>PortfolioCloudService</Name>
+    <UseWebProjectPorts>False</UseWebProjectPorts>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <!-- Items for the project -->
+  <ItemGroup>
+    <ServiceDefinition Include="ServiceDefinition.csdef" />
+    <ServiceConfiguration Include="ServiceConfiguration.Local.cscfg" />
+    <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HealthMonitoringService\HealthMonitoringService.csproj">
+      <Name>HealthMonitoringService</Name>
+      <Project>{0a104b5f-cb06-467e-b1d0-5b3bf9864018}</Project>
+      <Private>True</Private>
+      <RoleType>Worker</RoleType>
+      <RoleName>HealthMonitoringService</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
+    <ProjectReference Include="..\HealthStatusService\HealthStatusService.csproj">
+      <Name>HealthStatusService</Name>
+      <Project>{dc84747c-b362-435f-a614-9f3abf640c91}</Project>
+      <Private>True</Private>
+      <RoleType>Web</RoleType>
+      <RoleName>HealthStatusService</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
+    <ProjectReference Include="..\NotificationService\NotificationService.csproj">
+      <Name>NotificationService</Name>
+      <Project>{13efd70c-f773-411f-9dba-bd47390ae70c}</Project>
+      <Private>True</Private>
+      <RoleType>Worker</RoleType>
+      <RoleName>NotificationService</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
+    <ProjectReference Include="..\PortfolioService\PortfolioService.csproj">
+      <Name>PortfolioService</Name>
+      <Project>{bad94a46-9786-4660-b3de-a8c28f338d6d}</Project>
+      <Private>True</Private>
+      <RoleType>Web</RoleType>
+      <RoleName>PortfolioService</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="HealthMonitoringServiceContent\" />
+    <Folder Include="HealthStatusServiceContent\" />
+    <Folder Include="NotificationServiceContent\" />
+    <Folder Include="PortfolioServiceContent\" />
+  </ItemGroup>
+  <ItemGroup>
+    <DiagnosticsConfiguration Include="HealthMonitoringServiceContent\diagnostics.wadcfgx" />
+    <DiagnosticsConfiguration Include="HealthStatusServiceContent\diagnostics.wadcfgx" />
+    <DiagnosticsConfiguration Include="NotificationServiceContent\diagnostics.wadcfgx" />
+    <DiagnosticsConfiguration Include="PortfolioServiceContent\diagnostics.wadcfgx" />
+  </ItemGroup>
+  <!-- Import the target files for this project template -->
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">16.0</VisualStudioVersion>
+    <CloudExtensionsDir Condition=" '$(CloudExtensionsDir)' == '' ">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Windows Azure Tools\2.9\</CloudExtensionsDir>
+  </PropertyGroup>
+  <Import Project="$(CloudExtensionsDir)Microsoft.WindowsAzure.targets" />
+</Project>
