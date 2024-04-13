@@ -1,3 +1,4 @@
+using HealthMonitoringService;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
@@ -16,6 +17,7 @@ namespace NotificationService
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
+        private static HealthMonitoringServer healthMonitoringServer;
         public override void Run()
         {
             Trace.TraceInformation("NotificationService is running");
@@ -43,6 +45,9 @@ namespace NotificationService
 
             bool result = base.OnStart();
 
+            healthMonitoringServer = new HealthMonitoringServer();
+            healthMonitoringServer.Open();
+
             Trace.TraceInformation("NotificationService has been started");
 
             return result;
@@ -55,6 +60,7 @@ namespace NotificationService
             this.cancellationTokenSource.Cancel();
             this.runCompleteEvent.WaitOne();
 
+            healthMonitoringServer.Close();
             base.OnStop();
 
             Trace.TraceInformation("NotificationService has stopped");

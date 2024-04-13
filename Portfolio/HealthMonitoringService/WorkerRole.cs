@@ -1,6 +1,8 @@
+using Common;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
+using StudentServiceClient.UniversalConnector;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -48,6 +50,25 @@ namespace HealthMonitoringService
             return result;
         }
 
+        private void TestServices()
+        {
+            try
+            {
+                ServiceConnector<IHealthMonitoringService> serviceConnector = new ServiceConnector<IHealthMonitoringService>();
+                serviceConnector.Connect("net.tcp://localhost:10100/health-monitoring");
+                IHealthMonitoringService healthMonitoringService = serviceConnector.GetProxy();
+                healthMonitoringService.HealthCheck();
+                serviceConnector.Connect("net.tcp://localhost:10101/health-monitoring");
+                healthMonitoringService = serviceConnector.GetProxy();
+                healthMonitoringService.HealthCheck();
+                Trace.WriteLine($"{DateTime.UtcNow}_OK");
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"{DateTime.UtcNow}_NOT_OK");
+            }
+        }
+
         public override void OnStop()
         {
             Trace.TraceInformation("HealthMonitoringService is stopping");
@@ -66,6 +87,7 @@ namespace HealthMonitoringService
             while (!cancellationToken.IsCancellationRequested)
             {
                 Trace.TraceInformation("Working");
+                TestServices();
                 await Task.Delay(1000);
             }
         }
