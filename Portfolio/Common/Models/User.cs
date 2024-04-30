@@ -6,15 +6,15 @@ namespace Common.Models
     public class User : TableEntity
     {
 
-        public String Name { get; set; } = "";
-        public String LastName { get; set; } = "";
-        public String Address { get; set; } = "";
-        public String City { get; set; } = "";
-        public String Country { get; set; } = "";
-        public String PhoneNumber { get; set; } = "";
-        public String Email { get; set; } = "";
-        public String Password { get; set; } = "";
-        public String Picture { get; set; } = "";
+        public String Name { get; set; } = string.Empty;
+        public String LastName { get; set; } = string.Empty;
+        public String Address { get; set; } = string.Empty;
+        public String City { get; set; } = string.Empty;
+        public String Country { get; set; } = string.Empty;
+        public String PhoneNumber { get; set; } = string.Empty;
+        public String Email { get; set; } = string.Empty;
+        public String Password { get; set; } = string.Empty;
+        public String Picture { get; set; } = string.Empty;
 
         public User()
         {

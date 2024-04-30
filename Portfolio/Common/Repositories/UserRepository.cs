@@ -53,7 +53,7 @@ namespace Common.Repositories
             return RetrieveAllUsers().Where(p => p.RowKey == email).FirstOrDefault();
         }
 
-        public void UpdateStudent(User user)
+        public void UpdateUser(User user)
         {
             TableOperation updateOperation = TableOperation.Replace(user);
             _table.Execute(updateOperation);
