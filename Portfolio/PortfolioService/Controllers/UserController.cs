@@ -1,61 +1,67 @@
 ﻿using Common.Models;
 using Common.Repositories;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace PortfolioService.Controllers
 {
     public class UserController : Controller
     {
-        UserRepository repo = new UserRepository();
+        ICloudRepository<User> _cloudRepository = new CloudRepository<User>("UserTable");
 
         // GET: User
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View(repo.RetrieveAllUsers());
+            return View(await _cloudRepository.GetAll());
+        }
+
+        public async Task<ActionResult> Delete(string id)
+        {
+            try
+            {
+                await _cloudRepository.Delete(id);
+            }
+            catch
+            {
+                return View("Error");
+            }
+            return RedirectToAction("Index");
         }
 
         public ActionResult Create()
         {
-            User newUser = new User();
-            return View("AddEntity", newUser);
-        }
-
-        public ActionResult Delete(string id)
-        {
-            repo.RemoveUser(id);
-            return RedirectToAction("Index");
+            return View("AddEntity");
         }
 
         [HttpPost]
-        public ActionResult AddEntity(User receivedUser)
+        public async Task<ActionResult> Create(User receivedUser)
         {
             try
             {
-                if (repo.Exists(receivedUser.Email))
+                // Check if exists
+                if (await _cloudRepository.Get(receivedUser.RowKey) != null)
                 {
-                    return View("Error");
+                    User user = new User(receivedUser.Email)
+                    {
+                        Name = receivedUser.Name,
+                        LastName = receivedUser.LastName,
+                        Address = receivedUser.Address,
+                        City = receivedUser.City,
+                        Country = receivedUser.Country,
+                        PhoneNumber = receivedUser.PhoneNumber,
+                        Email = receivedUser.Email,
+                        Password = receivedUser.Password,
+                        Picture = receivedUser.Picture
+                    };
+
+                    await _cloudRepository.Add(user);
                 }
-
-                User user = new User(receivedUser.Email)
-                {
-                    Name = receivedUser.Name,
-                    LastName = receivedUser.LastName,
-                    Address = receivedUser.Address,
-                    City = receivedUser.City,
-                    Country = receivedUser.Country,
-                    PhoneNumber = receivedUser.PhoneNumber,
-                    Email = receivedUser.Email,
-                    Password = receivedUser.Password,
-                    Picture = receivedUser.Picture
-                };
-
-                repo.AddUser(user);
-                return RedirectToAction("Index");
             }
             catch
             {
-                return View("AddEntity");
+                return View("Error");
             }
+            return RedirectToAction("Index");
         }
     }
 }
