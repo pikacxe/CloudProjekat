@@ -42,7 +42,6 @@ namespace HealthMonitoringService
 
             // For information on handling configuration changes
             // see the MSDN topic at https://go.microsoft.com/fwlink/?LinkId=166357.
-
             bool result = base.OnStart();
 
             Trace.TraceInformation("HealthMonitoringService has been started");
@@ -52,20 +51,30 @@ namespace HealthMonitoringService
 
         private void TestServices()
         {
+            /// Test Portfolio service
+            ServiceConnector<IHealthMonitoringService> serviceConnector = new ServiceConnector<IHealthMonitoringService>();
             try
             {
-                ServiceConnector<IHealthMonitoringService> serviceConnector = new ServiceConnector<IHealthMonitoringService>();
                 serviceConnector.Connect("net.tcp://localhost:10100/health-monitoring");
                 IHealthMonitoringService healthMonitoringService = serviceConnector.GetProxy();
                 healthMonitoringService.HealthCheck();
-                serviceConnector.Connect("net.tcp://localhost:10101/health-monitoring");
-                healthMonitoringService = serviceConnector.GetProxy();
-                healthMonitoringService.HealthCheck();
-                Trace.WriteLine($"{DateTime.UtcNow}_OK");
+                Trace.WriteLine($"[INFO] {DateTime.UtcNow}-PORTFOLIO_OK");
             }
-            catch (Exception ex)
+            catch
             {
-                Trace.WriteLine($"{DateTime.UtcNow}_NOT_OK");
+                Trace.WriteLine($"[WARNING] {DateTime.UtcNow}-PORTFOLIO_NOT_OK");
+            }
+            /// Test Notification service
+            try
+            {
+                serviceConnector.Connect("net.tcp://localhost:10101/health-monitoring");
+                IHealthMonitoringService healthMonitoringService = serviceConnector.GetProxy();
+                healthMonitoringService.HealthCheck();
+                Trace.WriteLine($"[INFO] {DateTime.UtcNow}-NOTIFICATION_OK");
+            }
+            catch
+            {
+                Trace.WriteLine($"[WARNING] {DateTime.UtcNow}-NOTIFICATION_NOT_OK");
             }
         }
 
@@ -84,11 +93,12 @@ namespace HealthMonitoringService
         private async Task RunAsync(CancellationToken cancellationToken)
         {
             // TODO: Replace the following with your own logic.
+            Random r =  new Random();
             while (!cancellationToken.IsCancellationRequested)
             {
-                Trace.TraceInformation("Working");
+                Trace.TraceInformation("Health service working");
                 TestServices();
-                await Task.Delay(1000);
+                await Task.Delay(1000 + r.Next(0,4001));
             }
         }
     }
