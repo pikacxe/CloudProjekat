@@ -59,9 +59,11 @@
     <Compile Include="HealthMonitoringServiceProvider.cs" />
     <Compile Include="IHealthMonitoringService.cs" />
     <Compile Include="IServiceConnector.cs" />
+    <Compile Include="Models\ProfitAlarm.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Repositories\CloudRepository.cs" />
+    <Compile Include="Repositories\ICloudRepository.cs" />
     <Compile Include="ServiceConnector.cs" />
   </ItemGroup>
   <ItemGroup>

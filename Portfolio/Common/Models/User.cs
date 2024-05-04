@@ -22,7 +22,7 @@ namespace Common.Models
         }
         public User(String email)
         {
-            PartitionKey = "User"; RowKey = email;
+            PartitionKey = nameof(User); RowKey = email;
         }
     }
 }
