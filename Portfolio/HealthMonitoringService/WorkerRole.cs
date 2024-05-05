@@ -1,7 +1,11 @@
 using Common;
+using Common.Helpers;
+using Common.Models;
+using Common.Repositories;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
+using Microsoft.WindowsAzure.Storage.Queue;
 using StudentServiceClient.UniversalConnector;
 using System;
 using System.Collections.Generic;
@@ -17,7 +21,7 @@ namespace HealthMonitoringService
     {
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
-
+        private readonly ICloudRepository<HealthCheckInfo> _healthCheckRepository = new CloudRepository<HealthCheckInfo>("HealthCheck");
         public override void Run()
         {
             Trace.TraceInformation("HealthMonitoringService is running");
@@ -49,20 +53,38 @@ namespace HealthMonitoringService
             return result;
         }
 
-        private void TestServices()
+        private async Task TestServicesAsync()
         {
-            /// Test Portfolio service
             ServiceConnector<IHealthMonitoringService> serviceConnector = new ServiceConnector<IHealthMonitoringService>();
+            
+            /// Create new HealthCheckInfo for portfolio and notification service
+            Guid portfolioGuid = Guid.NewGuid();
+            Guid notificationGuid = Guid.NewGuid();
+
+            HealthCheckInfo portfolioHealthCheck = new HealthCheckInfo(portfolioGuid)
+            {
+                Id = portfolioGuid
+            };
+
+            HealthCheckInfo notificationHealthCheck = new HealthCheckInfo(notificationGuid)
+            {
+                Id = notificationGuid
+            };
+
+            /// Test Portfolio service
             try
             {
                 serviceConnector.Connect("net.tcp://localhost:10100/health-monitoring");
                 IHealthMonitoringService healthMonitoringService = serviceConnector.GetProxy();
                 healthMonitoringService.HealthCheck();
-                Trace.WriteLine($"[INFO] {DateTime.UtcNow}-PORTFOLIO_OK");
+
+                Trace.WriteLine($"[INFO] {DateTime.UtcNow}_PORTFOLIO_OK");
+                portfolioHealthCheck.Message = $"[INFO] {DateTime.UtcNow}_PORTFOLIO_OK";
             }
             catch
             {
-                Trace.WriteLine($"[WARNING] {DateTime.UtcNow}-PORTFOLIO_NOT_OK");
+                Trace.WriteLine($"[WARNING] {DateTime.UtcNow}_PORTFOLIO_NOT_OK");
+                portfolioHealthCheck.Message = $"[WARNING] {DateTime.UtcNow}_PORTFOLIO_NOT_OK";
             }
             /// Test Notification service
             try
@@ -70,12 +92,27 @@ namespace HealthMonitoringService
                 serviceConnector.Connect("net.tcp://localhost:10101/health-monitoring");
                 IHealthMonitoringService healthMonitoringService = serviceConnector.GetProxy();
                 healthMonitoringService.HealthCheck();
-                Trace.WriteLine($"[INFO] {DateTime.UtcNow}-NOTIFICATION_OK");
+
+                Trace.WriteLine($"[INFO] {DateTime.UtcNow}_NOTIFICATION_OK");
+                notificationHealthCheck.Message = $"[INFO] {DateTime.UtcNow}_NOTIFICATION_OK";
             }
             catch
             {
-                Trace.WriteLine($"[WARNING] {DateTime.UtcNow}-NOTIFICATION_NOT_OK");
+                Trace.WriteLine($"[WARNING] {DateTime.UtcNow}_NOTIFICATION_NOT_OK");
+                notificationHealthCheck.Message = $"[WARNING] {DateTime.UtcNow}_NOTIFICATION_NOT_OK";
             }
+
+            /// Add the messages to the table
+
+            await _healthCheckRepository.Add(portfolioHealthCheck);
+            await _healthCheckRepository.Add(notificationHealthCheck);
+
+            /// Send the message to the NotificationService
+            /// Maybe the implementation of sending email is better here
+
+            //CloudQueue queue = QueueHelper.GetQueueReference("HealthCheckQueue");
+            //queue.AddMessage(new CloudQueueMessage(portfolioHealthCheck.Message));
+
         }
 
         public override void OnStop()
@@ -97,7 +134,7 @@ namespace HealthMonitoringService
             while (!cancellationToken.IsCancellationRequested)
             {
                 Trace.TraceInformation("Health service working");
-                TestServices();
+                await TestServicesAsync();
                 await Task.Delay(1000 + r.Next(0,4001));
             }
         }

@@ -42,22 +42,21 @@ namespace PortfolioService.Controllers
         {
             string loggedInUserEmail = Session["LoggedInUserEmail"].ToString(); 
             var existingUser = await _cloudRepository.Get(loggedInUserEmail);
-            var userDto = new UserDTO
-            {
-                Name = existingUser.Name,
-                LastName = existingUser.LastName,
-                Address = existingUser.Address,
-                City = existingUser.City,
-                Country = existingUser.Country,
-                PhoneNumber = existingUser.PhoneNumber,
-                Email = existingUser.Email,
-                Password = existingUser.Password,
-                Picture = existingUser.Picture
-            };
-
 
             if (existingUser != null)
             {
+                var userDto = new UserDTO
+                {
+                    Name = existingUser.Name,
+                    LastName = existingUser.LastName,
+                    Address = existingUser.Address,
+                    City = existingUser.City,
+                    Country = existingUser.Country,
+                    PhoneNumber = existingUser.PhoneNumber,
+                    Email = existingUser.Email,
+                    Password = existingUser.Password,
+                    Picture = existingUser.Picture
+                };
                 return View("UpdateProfile", userDto);
             }
             else
@@ -67,7 +66,7 @@ namespace PortfolioService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateUser(UserDTO receivedUser)
+        public async Task<ActionResult> Register(UserDTO receivedUser)
         {
             try
             {
@@ -112,7 +111,7 @@ namespace PortfolioService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UpdateUser(UserDTO receivedUser)
+        public async Task<ActionResult> UpdateProfile(UserDTO receivedUser)
         {
             try
             {

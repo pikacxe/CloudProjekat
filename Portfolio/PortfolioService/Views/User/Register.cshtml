@@ -1,4 +1,4 @@
-﻿@model Common.Models.User
+﻿@model Common.DTOs.UserDTO
 
 @{
     ViewBag.Title = "Register";
@@ -7,13 +7,9 @@
 <h2>AddEntity</h2>
 
 
-@using (Html.BeginForm("CreateUser", "User", FormMethod.Post))
+@using (Html.BeginForm("Register", "User", FormMethod.Post))
 
 {
-    @Html.AntiForgeryToken()
-
-<div class="form-horizontal">
-    <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <div class="form-group">
         @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -82,7 +78,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Picture, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.Picture, new { htmlAttributes = new { @class = "form-control", required = "required"} })
+            @Html.EditorFor(model => model.Picture, new { htmlAttributes = new { @class = "form-control", required = "required" } })
             @Html.ValidationMessageFor(model => model.Picture, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -92,11 +88,10 @@
             <input type="submit" value="Create" class="btn btn-primary" />
         </div>
     </div>
-</div>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    <p>If you already have an account, you can <a href="@Url.Action("LogIn", "User")">login here</a>.</p>
 </div>
 
 @section Scripts {

@@ -6,9 +6,8 @@
 
 <h2>UpdateProfile</h2>
 
-@using (Html.BeginForm("UpdateUser", "User", FormMethod.Post))
+@using (Html.BeginForm("UpdateProfile", "User", FormMethod.Post))
 {
-    @Html.AntiForgeryToken()
     
 <div class="form-horizontal">
     <hr />
@@ -87,7 +86,7 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Save" class="btn btn-primary" />
+            <input type="submit" value="Save" class="btn btn-primary mt-3" />
         </div>
     </div>
 </div>

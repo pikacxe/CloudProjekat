@@ -22,7 +22,22 @@ namespace Common.Repositories
         {
             _storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("DataConnectionString"));
             CloudTableClient tableClient = new CloudTableClient(new Uri(_storageAccount.TableEndpoint.AbsoluteUri), _storageAccount.Credentials);
-            _table = tableClient.GetTableReference(tableName); _table.CreateIfNotExistsAsync();
+            _table = tableClient.GetTableReference(tableName);
+            _table.CreateIfNotExistsAsync().Wait();
+
+            if (typeof(T) == typeof(HealthCheckInfo))
+            {
+                ClearTable().Wait(); 
+            }
+        }
+
+        private async Task ClearTable()
+        {
+            var entities = await GetAll();
+            foreach (var entity in entities)
+            {
+                await Delete(entity.RowKey);
+            }
         }
 
         public async Task Add(T entity)

@@ -16,12 +16,12 @@ namespace PortfolioService
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            /// If action is LogIn skip the filter
+            /// If action is LogIn or Register skip the filter
             var actionDescriptor = filterContext.ActionDescriptor;
             var actionName = actionDescriptor.ActionName;
             var controllerName = actionDescriptor.ControllerDescriptor.ControllerName;
 
-            if (controllerName == "User" && actionName == "LogIn")
+            if (controllerName == "User" && (actionName == "LogIn" || actionName == "Register"))
                 return;
             
 
