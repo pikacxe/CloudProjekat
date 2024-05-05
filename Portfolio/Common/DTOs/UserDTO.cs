@@ -1,11 +1,13 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Common.Models
+namespace Common.DTOs
 {
-    public class User : TableEntity
+    public class UserDTO
     {
-
         public string Name { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
@@ -15,14 +17,5 @@ namespace Common.Models
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Picture { get; set; } = string.Empty;
-
-        public User()
-        {
-
-        }
-        public User(string email)
-        {
-            PartitionKey = nameof(User); RowKey = email;
-        }
     }
 }

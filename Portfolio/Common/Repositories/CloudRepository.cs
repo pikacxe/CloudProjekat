@@ -2,6 +2,7 @@
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using Microsoft.WindowsAzure.Storage.Table.Queryable;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -58,11 +59,10 @@ namespace Common.Repositories
 
         public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter)
         {
-            var query = _table.CreateQuery<T>();
-            query.Where(filter);
+            var query = _table.CreateQuery<T>().Where(filter);
             TableContinuationToken token = new TableContinuationToken();
-            var results = await _table.ExecuteQuerySegmentedAsync(query,token);
-            return results;
+            var results = await _table.ExecuteQuerySegmentedAsync(query.AsTableQuery(),token);
+            return results.Results;
         }
 
         public async Task Update(T entity)

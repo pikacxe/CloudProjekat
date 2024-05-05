@@ -1,4 +1,5 @@
-﻿using Common.Models;
+﻿using Common.DTOs;
+using Common.Models;
 using Common.Repositories;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -9,10 +10,9 @@ namespace PortfolioService.Controllers
     {
         ICloudRepository<User> _cloudRepository = new CloudRepository<User>("UserTable");
 
-        // GET: User
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
-            return View(await _cloudRepository.GetAll());
+            return View("Index");
         }
 
         public async Task<ActionResult> Delete(string id)
@@ -28,18 +28,51 @@ namespace PortfolioService.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult Create()
+        public ActionResult Register()
         {
-            return View("AddEntity");
+            return View("Register");
+        }
+
+        public ActionResult LogIn()
+        {
+            return View("Login");
+        }
+
+        public async Task<ActionResult> UpdateProfile()
+        {
+            string loggedInUserEmail = Session["LoggedInUserEmail"].ToString(); 
+            var existingUser = await _cloudRepository.Get(loggedInUserEmail);
+            var userDto = new UserDTO
+            {
+                Name = existingUser.Name,
+                LastName = existingUser.LastName,
+                Address = existingUser.Address,
+                City = existingUser.City,
+                Country = existingUser.Country,
+                PhoneNumber = existingUser.PhoneNumber,
+                Email = existingUser.Email,
+                Password = existingUser.Password,
+                Picture = existingUser.Picture
+            };
+
+
+            if (existingUser != null)
+            {
+                return View("UpdateProfile", userDto);
+            }
+            else
+            {
+                return View("Error");
+            }
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(User receivedUser)
+        public async Task<ActionResult> CreateUser(UserDTO receivedUser)
         {
             try
             {
                 // Check if exists
-                if (await _cloudRepository.Get(receivedUser.RowKey) != null)
+                if (await _cloudRepository.Get(receivedUser.Email) == null)
                 {
                     User user = new User(receivedUser.Email)
                     {
@@ -61,7 +94,52 @@ namespace PortfolioService.Controllers
             {
                 return View("Error");
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("LogIn");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> LogIn(string email, string password)
+        {
+
+            var existingUser = await _cloudRepository.Get(email);
+            if(existingUser != null && existingUser.Password == password)
+            {
+                Session["LoggedInUserEmail"] = existingUser.Email;   
+                return RedirectToAction("Index");
+            }
+ 
+            return RedirectToAction("LogIn");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UpdateUser(UserDTO receivedUser)
+        {
+            try
+            {
+                var existingUser = await _cloudRepository.Get(receivedUser.Email);
+                // Check if exists
+                if (existingUser != null)
+                {
+                    existingUser.Name = receivedUser.Name;
+                    existingUser.LastName = receivedUser.LastName;
+                    existingUser.Address = receivedUser.Address;
+                    existingUser.City = receivedUser.City;
+                    existingUser.Country = receivedUser.Country;
+                    existingUser.PhoneNumber = receivedUser.PhoneNumber;
+                    existingUser.Email = receivedUser.Email;
+                    existingUser.RowKey = receivedUser.Email;
+                    existingUser.Password = receivedUser.Password;
+                    existingUser.Picture = receivedUser.Picture;
+                    
+
+                    await _cloudRepository.Update(existingUser);
+                }
+            }
+            catch
+            {
+                return View("Error");
+            }
+            return RedirectToAction("UpdateProfile");
         }
     }
 }

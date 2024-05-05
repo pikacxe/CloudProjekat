@@ -55,10 +55,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTOs\UserDTO.cs" />
     <Compile Include="HealthMonitoringServer.cs" />
     <Compile Include="HealthMonitoringServiceProvider.cs" />
+    <Compile Include="Helpers\QueueHelper.cs" />
     <Compile Include="IHealthMonitoringService.cs" />
     <Compile Include="IServiceConnector.cs" />
+    <Compile Include="Models\HealthCheckInfo.cs" />
     <Compile Include="Models\ProfitAlarm.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
