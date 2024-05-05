@@ -117,7 +117,7 @@ namespace NotificationService
             if(price >= alarm.ProfitMargin)
             {
                 // Send mail to customer
-                await MailHelper.SendAlarmTriggered(alarm);
+                //await MailHelper.SendAlarmTriggered(alarm);
                 // Save alarm to queue
                 // Save to alarms done table
                 numOfSentMails++;

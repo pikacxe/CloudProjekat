@@ -38,6 +38,12 @@ namespace PortfolioService.Controllers
             return View("Login");
         }
 
+        public ActionResult LogOut()
+        {
+            Session.Clear();
+            return View("LogIn");
+        }
+
         public async Task<ActionResult> UpdateProfile()
         {
             string loggedInUserEmail = Session["LoggedInUserEmail"].ToString(); 
