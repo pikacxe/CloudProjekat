@@ -21,5 +21,11 @@ namespace Common.Models
             RowKey = profitAlarmId.ToString();
             TransactionId = transactionId;
         }
+
+        public override string ToString()
+        {
+            // TODO
+            return $"";
+        }
     }
 }

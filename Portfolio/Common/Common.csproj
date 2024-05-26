@@ -101,6 +101,8 @@
     <Compile Include="Models\ProfitAlarm.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserPortfolio.cs" />
+    <Compile Include="Models\UserPortfolioEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\CloudRepository.cs" />
     <Compile Include="Repositories\ICloudRepository.cs" />

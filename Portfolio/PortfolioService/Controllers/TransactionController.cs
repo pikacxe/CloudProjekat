@@ -6,13 +6,14 @@ using System.Web.Mvc;
 using Common.DTOs;
 using Common.Models;
 using Common.Repositories;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace PortfolioService.Controllers
 {
     public class TransactionController : Controller
     {
         private readonly ICloudRepository<Transaction> _cloudCryptoRepository = new CloudRepository<Transaction>("TransactionTable");
-        private readonly ICloudRepository<ProfitAlarm> _activeAlarmRepo = new CloudRepository<ProfitAlarm>("ActiveAlarmsTable");
+        private readonly ICloudRepository<UserPortfolioEntry> _cloudUserEntryRepository = new CloudRepository<UserPortfolioEntry>("UserEntries");
 
         public async Task<ActionResult> Index()
         {
@@ -50,16 +51,8 @@ namespace PortfolioService.Controllers
                         UserEmail = Session["LoggedInUserEmail"].ToString(),
                         TransactionType = recivedTransaction.TransactionType
                     };
-                    ProfitAlarm profitAlarm = new ProfitAlarm(Guid.NewGuid(),transaction.TransactionId)
-                    {
-                        CryptoCurrencyName = transaction.CryptoName,
-                        UserEmail = transaction.UserEmail,
-                        DateCreated = transaction.Date,
-                        ProfitMargin = recivedTransaction.Profit
-
-                    };
+                    await ProccessNewTransaction(transaction);
                     await _cloudCryptoRepository.Add(transaction);
-                    await _activeAlarmRepo.Add(profitAlarm);
                 }
             }
             catch
@@ -67,6 +60,37 @@ namespace PortfolioService.Controllers
                 return View("Error");
             }
             return RedirectToAction("Index");
+        }
+
+        private async Task ProccessNewTransaction(Transaction transaction)
+        {
+            var existingEntry = await _cloudUserEntryRepository.Get(x => x.UserEmail == Session["LoggedInUserEmail"].ToString());
+            if(existingEntry == null)
+            {
+                if(transaction.TransactionType == "Sale")
+                {
+                    throw new ArgumentException("First transaction must be a 'Purchase'");
+                }
+                existingEntry = new UserPortfolioEntry(transaction.CryptoName, transaction.UserEmail, transaction.Amount, transaction.Price);
+                await _cloudUserEntryRepository.Add(existingEntry);
+                return;
+            }
+            else
+            {
+                if(transaction.TransactionType == "Sale")
+                {
+                    existingEntry.UpdateOnSale(transaction.Amount, transaction.Price);
+                }
+                else if(transaction.TransactionType == "Purchase")
+                {
+                    existingEntry.UpdateOnPurchase(transaction.Amount, transaction.Price);
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid transaction type: '{transaction.TransactionType}'");
+                }
+                await _cloudUserEntryRepository.Update(existingEntry);
+            }
         }
 
         public async Task<ActionResult> CryptoInfo()

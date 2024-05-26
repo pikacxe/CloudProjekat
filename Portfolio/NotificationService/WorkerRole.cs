@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace NotificationService
 {
@@ -17,6 +18,7 @@ namespace NotificationService
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
         private readonly ICloudRepository<ProfitAlarm> _activeAlarmRepo = new CloudRepository<ProfitAlarm>("ActiveAlarmsTable");
         private readonly ICloudRepository<ProfitAlarm> _doneAlarmRepo = new CloudRepository<ProfitAlarm>("DoneAlarmsTable");
+        //private readonly CloudQueue _alarmsQueue = QueueHelper.GetQueueReference("alarmQueue");
 
 
         private static HealthMonitoringServer healthMonitoringServer;
@@ -46,7 +48,6 @@ namespace NotificationService
             // see the MSDN topic at https://go.microsoft.com/fwlink/?LinkId=166357.
 
             bool result = base.OnStart();
-
             healthMonitoringServer = new HealthMonitoringServer();
             healthMonitoringServer.Open();
 
@@ -90,25 +91,17 @@ namespace NotificationService
             // Check profit for each of them
             foreach(var alarm in alarmsToProcess)
             {
-                await CheckProfit(alarm);
+                var res = await CheckProfit(alarm);
             }
         }
 
-        private async Task CheckProfit(ProfitAlarm alarm)
+        private async Task<bool> CheckProfit(ProfitAlarm alarm)
         {
-            var numOfSentMails = 0;
             var name = alarm.CryptoCurrencyName;
             // Get currency price from external API
             var price = await CryptoInformationHelper.CheckPrice(name);
             Trace.WriteLine($"Price:{price}");
-            if(price >= alarm.ProfitMargin)
-            {
-                // Send mail to customer
-                //await MailHelper.SendAlarmTriggered(alarm);
-                // Save alarm to queue
-                // Save to alarms done table
-                numOfSentMails++;
-            }
+            return price >= alarm.ProfitMargin;
 
         }
     }
