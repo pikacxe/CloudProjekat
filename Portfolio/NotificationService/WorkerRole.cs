@@ -1,10 +1,10 @@
 using Common.Models;
 using Common.Repositories;
+using Common.Helpers;
 using HealthMonitoringService;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
-using NotificationService.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

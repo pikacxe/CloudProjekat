@@ -80,9 +80,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\CryptoCurrencyInfo.cs" />
-    <Compile Include="Helpers\CryptoInformationHelper.cs" />
-    <Compile Include="Helpers\MailHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WorkerRole.cs" />
   </ItemGroup>
