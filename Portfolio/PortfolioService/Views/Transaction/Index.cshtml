@@ -1,0 +1,40 @@
+﻿@using Common.Models
+@model IEnumerable<Transaction>  
+
+@{
+    ViewBag.Title = "Kriptovalute";
+}
+
+<h2>Kriptovalute: </h2>
+
+@if (Model.Count()>0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>CryptoName</th>
+                <th>Price</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transaction in Model)
+            {
+                <tr>
+                    <td>@transaction.CryptoName</td>
+                    <td>@transaction.Price</td>
+                    <td>@transaction.Amount</td>
+                    <td>@transaction.Date</td>
+                    <td>@transaction.TransactionType</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Trenutno nemate kriptovaluta.</p>
+}
+

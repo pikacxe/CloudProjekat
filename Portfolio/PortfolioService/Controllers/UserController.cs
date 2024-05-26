@@ -105,14 +105,13 @@ namespace PortfolioService.Controllers
         [HttpPost]
         public async Task<ActionResult> LogIn(string email, string password)
         {
-
             var existingUser = await _cloudRepository.Get(email);
             if(existingUser != null && existingUser.Password == password)
             {
-                Session["LoggedInUserEmail"] = existingUser.Email;   
+                Session["LoggedInUserEmail"] = existingUser.Email;
                 return RedirectToAction("Index");
             }
- 
+           
             return RedirectToAction("LogIn");
         }
 

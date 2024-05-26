@@ -89,16 +89,7 @@ namespace NotificationService
             // #TODO
             // Get at most 20 alarms from table
             var alarmsToProcess =  await _activeAlarmRepo.GetAll();
-            // Add test alarm
-            alarmsToProcess = alarmsToProcess.Append(new ProfitAlarm ("test")
-            {
-                CryptoCurrencyName = "BTC",
-                ProfitAlarmId = "test",
-                UserEmail = "user1@temp.com",
-                DateCreated = DateTime.Now,
-                ProfitMargin = 20012,
-
-            });
+            // Add test alarm          
             Trace.WriteLine(alarmsToProcess.Count());
             // Check profit for each of them
             foreach(var alarm in alarmsToProcess)

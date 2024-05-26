@@ -1,0 +1,32 @@
+﻿@model Common.DTOs.CryptoInfo
+
+@{
+    ViewBag.Title = "Crypto Information";
+}
+
+<h2>Crypto Information</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Crypto Name</th>
+            <th>Amount</th>
+            <th>Current Value</th>
+            <th>Profit</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var crypto in Model.Cryptos.Values)
+        {
+            <tr>
+                <td>@crypto.Name</td>
+                <td>@crypto.Amount</td>
+                <td>@crypto.Value</td>
+                <td>@crypto.Profit</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Total Value: @Model.TotalValue</h3>
+<h3>Total Profit: @Model.TotalProfit</h3>

@@ -29,6 +29,8 @@ namespace Common.Repositories
             {
                 ClearTable().Wait(); 
             }
+
+
         }
 
         private async Task ClearTable()

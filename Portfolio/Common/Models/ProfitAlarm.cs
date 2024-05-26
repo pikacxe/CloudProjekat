@@ -9,20 +9,21 @@ namespace Common.Models
 {
     public class ProfitAlarm:TableEntity
     {
-        public string ProfitAlarmId { get; set; } = string.Empty;
+        public Guid ProfitAlarmId { get; set; } 
         public string UserEmail { get; set; } = string.Empty;
         public string CryptoCurrencyName { get; set; } = string.Empty;
         public double ProfitMargin { get; set; }
+        public Guid TransactionId { get; set; }
 
         public DateTime DateCreated { get; set; }
 
         public ProfitAlarm() { }
 
-        public ProfitAlarm(string profitAlarmId)
+        public ProfitAlarm(Guid profitAlarmId, Guid transactionId)
         {
             PartitionKey = nameof(ProfitAlarm);
-            RowKey = profitAlarmId;
-
+            RowKey = profitAlarmId.ToString();
+            TransactionId = transactionId;
         }
     }
 }
