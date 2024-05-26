@@ -1,9 +1,4 @@
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace HealthStatusService
 {

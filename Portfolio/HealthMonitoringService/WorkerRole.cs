@@ -1,16 +1,10 @@
 using Common;
-using Common.Helpers;
 using Common.Models;
 using Common.Repositories;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
-using Microsoft.WindowsAzure.Storage.Queue;
 using StudentServiceClient.UniversalConnector;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
