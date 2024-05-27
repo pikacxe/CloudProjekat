@@ -13,6 +13,8 @@
                <tr>
                    <th>Crypto name</th>
                    <th>Amount</th>
+                   <th>Current profit</th>
+                   <th>Current value</th>
                </tr>
            </thead>
            <tbody>
@@ -21,15 +23,15 @@
                     <tr>
                         <td>@upe.CryptoName</td>
                         <td>@upe.Amount</td>
-                        <td>@upe.CurrentProfit</td>
-                        <td>@upe.CurrentValue</td>
+                        <td>@upe.CurrentProfit.ToString("C")</td>
+                        <td>@upe.CurrentValue.ToString("C")</td>
                     </tr>
                 }
            </tbody>
        </table>
        <div>
-           <h4>Total value: @Model.TotalValue</h4>
-           <h4>Total profit: @Model.TotalProfit</h4>
+           <h4>Total value: @Model.TotalValue.ToString("C")</h4>
+           <h4>Total profit: @Model.TotalProfit.ToString("C")</h4>
        </div>
     }
     else

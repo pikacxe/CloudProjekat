@@ -30,6 +30,7 @@ namespace Common.Models
                 double price = await Task.FromResult(r.NextDouble()*100000); // for development
                 entry.CurrentValue = price * entry.Amount;
                 TotalValue += entry.CurrentValue;
+                TotalProfit += entry.CurrentProfit;
             }
         }
     }

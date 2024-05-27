@@ -9,16 +9,16 @@ namespace PortfolioService.Controllers
     public class UserController : Controller
     {
         ICloudRepository<User> _cloudRepository = new CloudRepository<User>("UserTable");
-        ICloudRepository<UserPortfolioEntry> _userEntriesRepository = new CloudRepository<UserPortfolioEntry>("UserEntries");
+        ICloudRepository<UserPortfolioEntry> _userEntriesRepository = new CloudRepository<UserPortfolioEntry>("PortfolioEntry");
 
         public async Task<ActionResult> Index()
         {
-            var email = Session["LoggedInUserEmail"];
-            if (email == null)
-            {
-                return View("Login");
-            }
-            var entries = await _userEntriesRepository.GetAll(x => x.UserEmail == email.ToString());
+            var email = Session["LoggedInUserEmail"].ToString();
+            //if (email == null)
+            //{
+            //    return View("Login");
+            //}
+            var entries = await _userEntriesRepository.GetAll(x => x.PartitionKey == email);
             UserPortfolio up = new UserPortfolio(entries);
             await up.CalculateTotals();
             return View("Index",up);

@@ -13,7 +13,7 @@ namespace PortfolioService.Controllers
     public class TransactionController : Controller
     {
         private readonly ICloudRepository<Transaction> _cloudCryptoRepository = new CloudRepository<Transaction>("TransactionTable");
-        private readonly ICloudRepository<UserPortfolioEntry> _cloudUserEntryRepository = new CloudRepository<UserPortfolioEntry>("UserEntries");
+        private readonly ICloudRepository<UserPortfolioEntry> _cloudUserEntryRepository = new CloudRepository<UserPortfolioEntry>("PortfolioEntry");
 
         public async Task<ActionResult> Index()
         {
@@ -71,8 +71,8 @@ namespace PortfolioService.Controllers
                 {
                     throw new ArgumentException("First transaction must be a 'Purchase'");
                 }
-                existingEntry = new UserPortfolioEntry(transaction.CryptoName, transaction.UserEmail, transaction.Amount, transaction.Price);
-                await _cloudUserEntryRepository.Add(existingEntry);
+                var test = new UserPortfolioEntry(transaction.CryptoName, transaction.UserEmail, transaction.Amount, transaction.Price);
+                await _cloudUserEntryRepository.Add(test);
                 return;
             }
             else
