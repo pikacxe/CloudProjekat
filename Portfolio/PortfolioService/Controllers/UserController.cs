@@ -1,7 +1,13 @@
 ﻿using Common.DTOs;
 using Common.Models;
 using Common.Repositories;
+
+using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace PortfolioService.Controllers
@@ -86,13 +92,27 @@ namespace PortfolioService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Register(UserDTO receivedUser)
+        public async Task<ActionResult> Register(UserDTO receivedUser, HttpPostedFileBase file)
         {
             try
             {
                 // Check if exists
                 if (await _cloudRepository.Get(receivedUser.Email) == null)
                 {
+                    string uniqueBlobName = string.Format("image_{0}", receivedUser.Email);
+                    var storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("DataConnectionString"));
+                    var blobStorage = storageAccount.CreateCloudBlobClient();
+                    var container = blobStorage.GetContainerReference("vezba");
+                    await container.CreateIfNotExistsAsync();
+                    await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+                    var blob = container.GetBlockBlobReference(uniqueBlobName);
+                    blob.Properties.ContentType = file.ContentType;
+                    using (var fileStream = file.InputStream)
+                    {
+                        await blob.UploadFromStreamAsync(fileStream);
+                    }
+
+
                     User user = new User(receivedUser.Email)
                     {
                         Name = receivedUser.Name,
@@ -103,7 +123,7 @@ namespace PortfolioService.Controllers
                         PhoneNumber = receivedUser.PhoneNumber,
                         Email = receivedUser.Email,
                         Password = receivedUser.Password,
-                        Picture = receivedUser.Picture
+                        Picture = blob.Uri.ToString()
                     };
 
                     await _cloudRepository.Add(user);
@@ -147,7 +167,7 @@ namespace PortfolioService.Controllers
                     existingUser.Email = receivedUser.Email;
                     existingUser.RowKey = receivedUser.Email;
                     existingUser.Password = receivedUser.Password;
-                    existingUser.Picture = receivedUser.Picture;
+                   // existingUser.Picture = receivedUser.Picture;
                     
 
                     await _cloudRepository.Update(existingUser);
