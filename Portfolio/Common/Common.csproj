@@ -95,6 +95,7 @@
     <Compile Include="Helpers\CryptoInformationHelper.cs" />
     <Compile Include="Helpers\MailHelper.cs" />
     <Compile Include="Helpers\QueueHelper.cs" />
+    <Compile Include="IAdminConsole.cs" />
     <Compile Include="IHealthMonitoringService.cs" />
     <Compile Include="IServiceConnector.cs" />
     <Compile Include="Models\HealthCheckInfo.cs" />

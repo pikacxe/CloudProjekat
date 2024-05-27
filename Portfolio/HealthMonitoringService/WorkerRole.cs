@@ -16,6 +16,7 @@ namespace HealthMonitoringService
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
         private readonly ICloudRepository<HealthCheckInfo> _healthCheckRepository = new CloudRepository<HealthCheckInfo>("HealthCheck");
+        private static AdminConsoleService adminConsoleService;
         public override void Run()
         {
             Trace.TraceInformation("HealthMonitoringService is running");
@@ -41,6 +42,8 @@ namespace HealthMonitoringService
             // For information on handling configuration changes
             // see the MSDN topic at https://go.microsoft.com/fwlink/?LinkId=166357.
             bool result = base.OnStart();
+            adminConsoleService = new AdminConsoleService();
+            adminConsoleService.Open();
 
             Trace.TraceInformation("HealthMonitoringService has been started");
 
@@ -116,6 +119,7 @@ namespace HealthMonitoringService
             this.cancellationTokenSource.Cancel();
             this.runCompleteEvent.WaitOne();
 
+            adminConsoleService.Close();
             base.OnStop();
 
             Trace.TraceInformation("HealthMonitoringService has stopped");
