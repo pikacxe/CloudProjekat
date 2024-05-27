@@ -25,6 +25,13 @@
                         <td>@upe.Amount</td>
                         <td>@upe.CurrentProfit.ToString("C")</td>
                         <td>@upe.CurrentValue.ToString("C")</td>
+                        <td>
+                            <form action="@Url.Action("DeleteUserPortfolioEntry", "User")" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="cryptoName" value="@upe.RowKey" />
+                                <input type="submit" value="Delete" class="btn btn-danger" />
+                            </form>
+                        </td>
                     </tr>
                 }
            </tbody>

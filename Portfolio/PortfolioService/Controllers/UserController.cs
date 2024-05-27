@@ -52,6 +52,11 @@ namespace PortfolioService.Controllers
             Session.Clear();
             return View("LogIn");
         }
+        public ActionResult DeleteUserPortfolioEntry()
+        {
+            return View("DeleteUserPortfolioEntry");
+        }
+
 
         public async Task<ActionResult> UpdateProfile()
         {
@@ -153,6 +158,25 @@ namespace PortfolioService.Controllers
                 return View("Error");
             }
             return RedirectToAction("UpdateProfile");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> DeleteUserPortfolioEntry(string cryptoName)
+        {
+            try
+            {
+                // Check if is loggedIn
+                if (Session["LoggedInUserEmail"] != null)
+                {
+                    await _userEntriesRepository.Delete(cryptoName);
+                }
+            }
+            catch
+            {
+                return View("Error");
+            }
+            return RedirectToAction("Index");
+
         }
     }
 }

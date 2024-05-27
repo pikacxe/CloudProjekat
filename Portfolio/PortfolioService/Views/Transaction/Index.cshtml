@@ -28,6 +28,13 @@
                     <td>@transaction.Amount</td>
                     <td>@transaction.Date</td>
                     <td>@transaction.TransactionType</td>
+                    <td>
+                        <form action="@Url.Action("DeleteTransaction", "Transaction")" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="transactionId" value="@transaction.RowKey" />
+                            <input type="submit" value="Delete Transaction" class="btn btn-danger" />
+                        </form>
+                     </td>
                 </tr>
             }
         </tbody>

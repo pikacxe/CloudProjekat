@@ -31,7 +31,13 @@ namespace PortfolioService.Controllers
         {
             return View("AddTransaction");
         }
-        
+
+        public ActionResult DeleteTransaction()
+        {
+            return View("DeleteTransaction");
+        }
+
+
 
 
         [HttpPost]
@@ -64,7 +70,7 @@ namespace PortfolioService.Controllers
 
         private async Task ProccessNewTransaction(Transaction transaction)
         {
-            var existingEntry = await _cloudUserEntryRepository.Get(x => x.UserEmail == Session["LoggedInUserEmail"].ToString());
+            var existingEntry = await _cloudUserEntryRepository.Get(x => x.PartitionKey == Session["LoggedInUserEmail"].ToString() && x.RowKey==transaction.CryptoName);
             if(existingEntry == null)
             {
                 if(transaction.TransactionType == "Sale")
@@ -91,6 +97,24 @@ namespace PortfolioService.Controllers
                 }
                 await _cloudUserEntryRepository.Update(existingEntry);
             }
+        }
+        [HttpPost]
+        public async Task<ActionResult> DeleteTransaction(Guid transactionId)
+        {
+            try
+            {
+                // Check if is loggedIn
+                if (Session["LoggedInUserEmail"] != null)
+                {
+                    await _cloudCryptoRepository.Delete(transactionId.ToString());
+                }
+            }
+            catch
+            {
+                return View("Error");
+            }
+            return RedirectToAction("Index");
+
         }
 
         public async Task<ActionResult> CryptoInfo()
