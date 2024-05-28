@@ -94,13 +94,9 @@ namespace NotificationService
         {
             // Get at most 20 alarms from table
             var alarmsToProcess = await _activeAlarmRepo.GetAll();
+            alarmsToProcess = alarmsToProcess.Take(20);
             Trace.WriteLine(alarmsToProcess.Count());
             List<Guid> doneAlarmIds = new List<Guid>();
-            ProfitAlarm testAlarm = new ProfitAlarm("test@test.com");
-            testAlarm.ProfitMargin = 1000;
-            testAlarm.CryptoCurrencyName = "BTC";
-            testAlarm.DateCreated = DateTime.Now;
-            alarmsToProcess=alarmsToProcess.Append(testAlarm);
             // Check profit for each of them
             foreach (var alarm in alarmsToProcess)
             {
@@ -113,7 +109,7 @@ namespace NotificationService
                     // Add done alarm id to list
                     doneAlarmIds.Add(alarm.ProfitAlarmId);
                     // Remove completed alarm froma active alarm table
-                    //await _activeAlarmRepo.Delete(alarm.RowKey);
+                    await _activeAlarmRepo.Delete(alarm.RowKey);
                 }
             }
             // Enqueue done alarmIds
@@ -126,7 +122,7 @@ namespace NotificationService
             string message = "";
             foreach (var alarmId in doneAlarmIds)
             {
-                message += $"{alarmId}|";
+                message += $"|{alarmId}";
             }
             await _alarmsQueue.AddMessageAsync(new CloudQueueMessage(message));
         }

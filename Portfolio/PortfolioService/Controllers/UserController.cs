@@ -1,11 +1,12 @@
 ﻿using Common.DTOs;
 using Common.Models;
 using Common.Repositories;
-
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -16,18 +17,29 @@ namespace PortfolioService.Controllers
     {
         ICloudRepository<User> _cloudRepository = new CloudRepository<User>("UserTable");
         ICloudRepository<UserPortfolioEntry> _userEntriesRepository = new CloudRepository<UserPortfolioEntry>("PortfolioEntry");
-
+        ICloudRepository<ProfitAlarm> _alarmRepo = new CloudRepository<ProfitAlarm>("ActiveAlarmsTable");
+        ICloudRepository<ProfitAlarm> _doneAlarmRepo = new CloudRepository<ProfitAlarm>("DoneAlarmsTable");
+        public static string DoneAlarms { get; set;}
         public async Task<ActionResult> Index()
         {
             var email = Session["LoggedInUserEmail"].ToString();
-            //if (email == null)
-            //{
-            //    return View("Login");
-            //}
+            if (email == null)
+            {
+                return View("Login");
+            }
+            ViewBag.DoneAlarms = DoneAlarms;
             var entries = await _userEntriesRepository.GetAll(x => x.PartitionKey == email);
             UserPortfolio up = new UserPortfolio(entries);
             await up.CalculateTotals();
             return View("Index",up);
+        }
+
+        public async Task<ActionResult> AlarmsView()
+        {
+            string[] ids = DoneAlarms.TrimStart('|').Split('|');
+            string email = Session["LoggedInUserEmail"].ToString();
+            IEnumerable<ProfitAlarm> alarms = await _doneAlarmRepo.GetAll(x=>x.PartitionKey==email && ids.Contains(x.ProfitAlarmId.ToString()));
+            return View("AlarmsView", alarms);
         }
 
         public async Task<ActionResult> Delete(string id)
@@ -58,10 +70,10 @@ namespace PortfolioService.Controllers
             Session.Clear();
             return View("LogIn");
         }
-        public ActionResult DeleteUserPortfolioEntry()
-        {
-            return View("DeleteUserPortfolioEntry");
-        }
+        //public ActionResult DeleteUserPortfolioEntry()
+        //{
+        //    return View("DeleteUserPortfolioEntry");
+        //}
 
 
         public async Task<ActionResult> UpdateProfile()
@@ -190,6 +202,10 @@ namespace PortfolioService.Controllers
                 {
                     await _userEntriesRepository.Delete(cryptoName);
                 }
+                else
+                {
+                    return View("Login");
+                }
             }
             catch
             {
@@ -197,6 +213,32 @@ namespace PortfolioService.Controllers
             }
             return RedirectToAction("Index");
 
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddAlarmForCrypto(string cryptoName, int cryptoMargin)
+        {
+            try
+            {
+                // Check if is loggedIn
+                if (Session["LoggedInUserEmail"] != null)
+                {
+                    ProfitAlarm pa = new ProfitAlarm(Session["LoggedInUserEmail"].ToString());
+                    pa.CryptoCurrencyName = cryptoName;
+                    pa.ProfitMargin = cryptoMargin;
+                    pa.DateCreated = DateTime.Now;
+                    await _alarmRepo.Add(pa);
+                    return View("Index");
+                }
+                else
+                {
+                    return View("Login");
+                }
+            }
+            catch
+            {
+                return View("Error");
+            }
         }
     }
 }

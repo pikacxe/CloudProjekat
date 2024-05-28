@@ -8,6 +8,7 @@ using Common.Helpers;
 using System.Threading.Tasks;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
+using PortfolioService.Controllers;
 
 namespace PortfolioService
 {
@@ -41,7 +42,7 @@ namespace PortfolioService
                     else
                     {
                         Trace.TraceInformation($"Queue message: {message.AsString}");
-
+                        UserController.DoneAlarms = message.AsString;
                         queue.DeleteMessage(message);
                     }
 
