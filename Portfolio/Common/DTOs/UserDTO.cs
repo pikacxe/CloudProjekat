@@ -1,4 +1,6 @@
-﻿namespace Common.DTOs
+﻿using System.Web;
+
+namespace Common.DTOs
 {
     public class UserDTO
     {
@@ -10,6 +12,6 @@
         public string PhoneNumber { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public string Picture { get; set; } = string.Empty;
+        public string Picture { get; set; }
     }
 }
