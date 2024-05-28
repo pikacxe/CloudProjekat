@@ -9,23 +9,16 @@ namespace Common.Models
         public string UserEmail { get; set; } = string.Empty;
         public string CryptoCurrencyName { get; set; } = string.Empty;
         public double ProfitMargin { get; set; }
-        public Guid TransactionId { get; set; }
-
         public DateTime DateCreated { get; set; }
 
         public ProfitAlarm() { }
 
-        public ProfitAlarm(Guid profitAlarmId, Guid transactionId)
+        public ProfitAlarm(string userEmail)
         {
-            PartitionKey = nameof(ProfitAlarm);
-            RowKey = profitAlarmId.ToString();
-            TransactionId = transactionId;
-        }
-
-        public override string ToString()
-        {
-            // TODO
-            return $"";
+            ProfitAlarmId = Guid.NewGuid();
+            UserEmail = userEmail;
+            PartitionKey = userEmail;
+            RowKey = ProfitAlarmId.ToString();
         }
     }
 }

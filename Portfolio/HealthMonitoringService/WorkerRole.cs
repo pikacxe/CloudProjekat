@@ -2,6 +2,7 @@ using Common;
 using Common.Models;
 using Common.Repositories;
 using Microsoft.WindowsAzure.ServiceRuntime;
+using NotificationService.Helpers;
 using StudentServiceClient.UniversalConnector;
 using System;
 using System.Diagnostics;
@@ -103,6 +104,15 @@ namespace HealthMonitoringService
 
             await _healthCheckRepository.Add(portfolioHealthCheck);
             await _healthCheckRepository.Add(notificationHealthCheck);
+            if (portfolioHealthCheck.Message.Contains("WARNING"))
+            {
+                await MailHelper.SendServiceDown(AdminConsoleServiceProvider.adminEmails, "'Portfolio service'");
+            }
+            if (notificationHealthCheck.Message.Contains("WARNING"))
+            {
+                await MailHelper.SendServiceDown(AdminConsoleServiceProvider.adminEmails, "'Notification service'");
+
+            }
 
             /// Send the message to the NotificationService
             /// Maybe the implementation of sending email is better here
