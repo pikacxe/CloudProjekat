@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "Health Status";
+}
+
+<h2>Health Status</h2>
+
+<style>
+    .chart-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px; 
+    }
+
+    .chart-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .chart-container canvas {
+        width: 200px !important;
+        height: 200px !important;
+    }
+</style>
+
+<div class="chart-container">
+    <div class="chart-item">
+        <canvas id="portfolioChart"></canvas>
+        <p>Portfolio Service</p>
+    </div>
+    <div class="chart-item">
+        <canvas id="notificationChart"></canvas>
+        <p>Notification Service</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctxPortfolio = document.getElementById('portfolioChart').getContext('2d');
+    var portfolioChart = new Chart(ctxPortfolio, {
+        type: 'pie',
+        data: {
+            labels: ['OK', 'NOT OK'],
+            datasets: [{
+                label: 'Portfolio Service',
+                data: [@ViewBag.PortfolioOkCount, @ViewBag.PortfolioNotOkCount],
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(255, 99, 132, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    enabled: true,
+                }
+            }
+        }
+    });
+
+    var ctxNotification = document.getElementById('notificationChart').getContext('2d');
+    var notificationChart = new Chart(ctxNotification, {
+        type: 'pie',
+        data: {
+            labels: ['OK', 'NOT OK'],
+            datasets: [{
+                label: 'Notification Service',
+                data: [@ViewBag.NotificationOkCount, @ViewBag.NotificationNotOkCount],
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(255, 99, 132, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    enabled: true,
+                }
+            }
+        }
+    });
+</script>
