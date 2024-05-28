@@ -104,15 +104,15 @@ namespace HealthMonitoringService
 
             await _healthCheckRepository.Add(portfolioHealthCheck);
             await _healthCheckRepository.Add(notificationHealthCheck);
-            //if (portfolioHealthCheck.Message.Contains("WARNING"))
-            //{
-            //    await MailHelper.SendServiceDown(AdminConsoleServiceProvider.adminEmails, "'Portfolio service'");
-            //}
-            //if (notificationHealthCheck.Message.Contains("WARNING"))
-            //{
-            //    await MailHelper.SendServiceDown(AdminConsoleServiceProvider.adminEmails, "'Notification service'");
+            if (portfolioHealthCheck.Message.Contains("WARNING"))
+            {
+                //await MailHelper.SendServiceDown(AdminConsoleServiceProvider.adminEmails, "Portfolio service");
+            }
+            if (notificationHealthCheck.Message.Contains("WARNING"))
+            {
+                //await MailHelper.SendServiceDown(AdminConsoleServiceProvider.adminEmails, "Notification service");
 
-            //}
+            }
         }
 
         public override void OnStop()

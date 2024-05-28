@@ -14,7 +14,10 @@ namespace HealthMonitoringService
         private readonly ICloudRepository<User> _userRepo = new CloudRepository<User>("UserTable");
         private List<string> _activeAdmins = new List<string>();
         private Dictionary<string, string> _adminAccounts = new Dictionary<string, string>();
-        public static List<string> adminEmails = new List<string>();
+        public static List<string> adminEmails = new List<string>
+        {
+            "admin@admin.com"
+        };
         private readonly Regex reg = new Regex(@"^[a-zA-z0-9]+[\-\.]?[a-zA-z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$");
         public AdminConsoleServiceProvider()
         {

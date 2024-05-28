@@ -33,7 +33,7 @@ namespace NotificationService.Helpers
             using (var client = Connect())
             {
                 MailMessage mailMessage = new MailMessage();
-                mailMessage.Sender = new MailAddress("service-down@portofilioservice.com");
+                mailMessage.From = new MailAddress("service-down@portofilioservice.com");
                 mailMessage.Subject = $"!!!!! {serviceName} is currently down !!!!!!";
                 mailMessage.Body = $"{serviceName} is currently down";
                 foreach(string email in adminEmails)
