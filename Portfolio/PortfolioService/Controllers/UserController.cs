@@ -36,9 +36,13 @@ namespace PortfolioService.Controllers
 
         public async Task<ActionResult> AlarmsView()
         {
+            if (DoneAlarms == null)
+            {
+                return View("AlarmsView", Enumerable.Empty<ProfitAlarm>());
+            }
             string[] ids = DoneAlarms.TrimStart('|').Split('|');
             string email = Session["LoggedInUserEmail"].ToString();
-            IEnumerable<ProfitAlarm> alarms = await _doneAlarmRepo.GetAll(x=>x.PartitionKey==email && ids.Contains(x.ProfitAlarmId.ToString()));
+            IEnumerable<ProfitAlarm> alarms = await _doneAlarmRepo.GetAll(x=>x.PartitionKey==email);
             return View("AlarmsView", alarms);
         }
 
@@ -228,7 +232,9 @@ namespace PortfolioService.Controllers
                     pa.ProfitMargin = cryptoMargin;
                     pa.DateCreated = DateTime.Now;
                     await _alarmRepo.Add(pa);
-                    return View("Index");
+                    string email = Session["LoggedInUserEmail"].ToString();
+                    IEnumerable<ProfitAlarm> alarms = await _doneAlarmRepo.GetAll(x => x.PartitionKey == email);
+                    return RedirectToAction("AlarmsView", alarms);
                 }
                 else
                 {

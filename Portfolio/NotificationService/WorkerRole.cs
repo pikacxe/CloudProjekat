@@ -94,7 +94,7 @@ namespace NotificationService
         {
             // Get at most 20 alarms from table
             var alarmsToProcess = await _activeAlarmRepo.GetAll();
-            alarmsToProcess = alarmsToProcess.Take(20);
+            alarmsToProcess = alarmsToProcess.Take(20).ToList();
             Trace.WriteLine(alarmsToProcess.Count());
             List<Guid> doneAlarmIds = new List<Guid>();
             // Check profit for each of them
