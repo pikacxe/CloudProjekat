@@ -1,0 +1,32 @@
+﻿@model List<Common.DTOs.CryptoCurrency>
+
+@{
+    ViewBag.Title = "Search Results";
+}
+
+<h2>Search Results</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>No results found.</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var crypto in Model)
+            {
+                <tr>
+                    <td>@crypto.Name</td>
+                    <td>@crypto.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

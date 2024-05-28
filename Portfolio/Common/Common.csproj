@@ -89,7 +89,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTOs\Crypto.cs" />
+    <Compile Include="DTOs\CryptoCurrency.cs" />
     <Compile Include="DTOs\CryptoInfo.cs" />
+    <Compile Include="DTOs\CryptoPrice.cs" />
     <Compile Include="DTOs\TransactionDTO.cs" />
     <Compile Include="DTOs\UserDTO.cs" />
     <Compile Include="HealthMonitoringServer.cs" />
