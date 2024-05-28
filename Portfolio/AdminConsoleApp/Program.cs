@@ -30,13 +30,17 @@ namespace AdminConsoleApp
                     Console.WriteLine("Menu\n");
                     Console.WriteLine("1 - List all users");
                     Console.WriteLine("2 - Delete user by email");
+                    Console.WriteLine("3 - List all admin emails");
+                    Console.WriteLine("4 - Add / Update admin email");
                     Console.WriteLine("q - exit ");
 
                     input = Console.ReadLine();
                     switch (input)
                     {
-                        case "1": ListAllUsers(res,proxy); break;
-                        case "2": DeleteUserUsers(res,proxy); break;
+                        case "1": ListAllUsers(res, proxy); break;
+                        case "2": DeleteUserUsers(res, proxy); break;
+                        case "3": ListAllAdminEmails(res, proxy); break;
+                        case "4": AddAdminEmail(res, proxy); break;
                     }
                 }
                 while (input != "q");
@@ -49,6 +53,48 @@ namespace AdminConsoleApp
             }
             // Debug purpose
             Console.ReadLine();
+        }
+
+        private static void ListAllAdminEmails(string adminKey, IAdminConsole proxy)
+        {
+            var emails = proxy.ListAdminEmails(adminKey);
+            Console.WriteLine("=======================================");
+            Console.WriteLine("Admin email");
+            foreach (var email in emails)
+            {
+                Console.WriteLine(string.Format("{0,-30}\n",email));
+            }
+            Console.WriteLine("=======================================");
+        }
+
+        private static void AddAdminEmail(string adminKey, IAdminConsole proxy)
+        {
+            Console.WriteLine("Add new or update existing? (N - new, U - update, Q - cancel");
+            string input;
+            do
+            {
+                input = Console.ReadLine().Trim().ToUpper();
+                if (input == "N")
+                {
+                    Console.WriteLine("Enter new admine email:");
+                    string newEmail = Console.ReadLine().Trim();
+                    string res = proxy.UpdateEmail(adminKey, newEmail);
+                    Console.WriteLine(res);
+                    return;
+                }
+                else if (input == "U")
+                {
+                    Console.WriteLine("Enter admin email to change:");
+                    string existingEmail = Console.ReadLine().Trim();
+                    Console.WriteLine("Enter updated email:");
+                    string updateEmail = Console.ReadLine().Trim();
+                    string res = proxy.UpdateEmail(adminKey, existingEmail, updateEmail);
+                    Console.WriteLine(res);
+                    return;
+                }
+                Console.WriteLine("Invalid option");
+            } while (input != "q");
+
         }
 
         private static async void DeleteUserUsers(string adminKey, IAdminConsole proxy)
