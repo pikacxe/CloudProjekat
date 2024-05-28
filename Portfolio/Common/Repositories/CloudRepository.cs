@@ -62,7 +62,10 @@ namespace Common.Repositories
 
         public async Task<IEnumerable<T>> GetAll()
         {
-            return await GetAll(x => x.PartitionKey == typeof(T).Name);
+            var query = _table.CreateQuery<T>();
+            TableContinuationToken token = new TableContinuationToken();
+            var results = await _table.ExecuteQuerySegmentedAsync(query.AsTableQuery(), token);
+            return results.Results;
         }
 
         public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter)

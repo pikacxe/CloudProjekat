@@ -5,7 +5,7 @@
 }
 
 <h2>Portfolio</h2>
-
+    
    @if (Model.Entries.Count() > 0)
     {
        <table>
@@ -15,6 +15,7 @@
                    <th>Amount</th>
                    <th>Current profit</th>
                    <th>Current value</th>
+                   <th colspan="2">Actions</th>
                </tr>
            </thead>
            <tbody>
@@ -30,6 +31,14 @@
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="cryptoName" value="@upe.RowKey" />
                                 <input type="submit" value="Delete" class="btn btn-danger" />
+                            </form>
+                        </td>
+                        <td>
+                            <form action="@Url.Action("AddAlarmForCrypto", "User")" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="cryptoName" value="@upe.RowKey" />
+                                <input type="number" name="cryptoMargin" required/>
+                                <input type="submit" value="Add alarm" class="btn btn-danger" />
                             </form>
                         </td>
                     </tr>
@@ -49,3 +58,4 @@
 <a href="@Url.Action("AddTransaction", "Transaction")">Add transaction</a>
 <a href="@Url.Action("Index", "Transaction")">View transactions</a>
 <a href="@Url.Action("Index", "Currency")">Search currency</a>
+<a href="@Url.Action("AlarmsView", "User")">View alarms</a>

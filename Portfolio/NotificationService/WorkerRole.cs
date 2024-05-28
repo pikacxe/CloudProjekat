@@ -94,16 +94,13 @@ namespace NotificationService
         {
             // Get at most 20 alarms from table
             var alarmsToProcess = await _activeAlarmRepo.GetAll();
+            alarmsToProcess = alarmsToProcess.Take(20).ToList();
             Trace.WriteLine(alarmsToProcess.Count());
             List<Guid> doneAlarmIds = new List<Guid>();
-            ProfitAlarm testAlarm = new ProfitAlarm("test@test.com");
-            testAlarm.ProfitMargin = 1000;
-            testAlarm.CryptoCurrencyName = "BTC";
-            testAlarm.DateCreated = DateTime.Now;
-            alarmsToProcess.Append(testAlarm);
             // Check profit for each of them
             foreach (var alarm in alarmsToProcess)
             {
+                Trace.WriteLine("Alarm: "+alarm.ToString());
                 var res = await CheckProfit(alarm);
                 if (res)
                 {
@@ -117,18 +114,21 @@ namespace NotificationService
                 }
             }
             // Enqueue done alarmIds
-            EnqueueAlarmIds(doneAlarmIds);
+            await EnqueueAlarmIdsAsync(doneAlarmIds);
         }
 
-        private void EnqueueAlarmIds(List<Guid> doneAlarmIds)
+        private async Task EnqueueAlarmIdsAsync(List<Guid> doneAlarmIds)
         {
-            CloudQueue _alarmsQueue = QueueHelper.GetQueueReference("AlarmsQueue");
+            CloudQueue _alarmsQueue = QueueHelper.GetQueueReference("alarmsqueue");
             string message = "";
             foreach (var alarmId in doneAlarmIds)
             {
-                message += $"{alarmId}|";
+                message += $"|{alarmId}";
             }
-            _alarmsQueue.AddMessageAsync(new CloudQueueMessage(message));
+            if(message != "")
+            {
+                await _alarmsQueue.AddMessageAsync(new CloudQueueMessage(message));
+            }
         }
 
         private async Task<bool> CheckProfit(ProfitAlarm alarm)

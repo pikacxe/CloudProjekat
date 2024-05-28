@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Common.Models.ProfitAlarm>
+
+@{
+    ViewBag.Title = "AlarmsView";
+}
+
+<h2>AlarmsView</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CryptoCurrencyName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProfitMargin)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DateCreated)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.CryptoCurrencyName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ProfitMargin)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DateCreated)
+        </td>
+    </tr>
+}
+
+</table>

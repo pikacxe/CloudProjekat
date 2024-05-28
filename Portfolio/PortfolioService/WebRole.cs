@@ -8,6 +8,7 @@ using Common.Helpers;
 using System.Threading.Tasks;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
+using PortfolioService.Controllers;
 
 namespace PortfolioService
 {
@@ -25,36 +26,6 @@ namespace PortfolioService
             return ret;
         }
 
-        public override void Run()
-        {
-            try
-            {
-                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("DataConnectionString"));
-                CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-                CloudQueue queue = queueClient.GetQueueReference("AlarmsQueue");
-                while (true)
-                {
-                    //CloudQueueMessage message = queue.GetMessage();
-                    //if (message == null)
-                    //{
-                    //    Trace.TraceInformation("No messages in queue.", "Information");
-                    //}
-                    //else
-                    //{
-                    //    Trace.TraceInformation($"Queue message: {message.AsString}");
-
-                    //    queue.DeleteMessage(message);
-                    //}
-
-                    Thread.Sleep(5000);
-                    Trace.TraceInformation("Working", "Information");
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError(ex.Message);
-            }
-        }
         public override void OnStop()
         {
             healthMonitoringServer.Close();

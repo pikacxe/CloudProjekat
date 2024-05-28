@@ -198,6 +198,7 @@
     <Content Include="Views\Transaction\CryptoInfo.cshtml" />
     <Content Include="Views\Currency\Search.cshtml" />
     <Content Include="Views\Currency\Index.cshtml" />
+    <Content Include="Views\User\AlarmsView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
