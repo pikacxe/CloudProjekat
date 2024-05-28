@@ -14,5 +14,11 @@ namespace Common
         Task<IEnumerable<User>> ListUsersAsync(string adminKey);
         [OperationContract]
         Task<string> DeleteByIdAsync(string adminKey, string userEmail);
+
+        [OperationContract]
+        string UpdateEmail(string adminKey, string email, string updatedEmail = "");
+
+        [OperationContract]
+        IEnumerable<string> ListAdminEmails(string adminKey);
     }
 }
