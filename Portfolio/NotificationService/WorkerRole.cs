@@ -9,6 +9,9 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Queue;
+using NotificationService.Helpers;
+using System.Collections.Generic;
+using System;
 
 namespace NotificationService
 {
@@ -18,7 +21,6 @@ namespace NotificationService
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
         private readonly ICloudRepository<ProfitAlarm> _activeAlarmRepo = new CloudRepository<ProfitAlarm>("ActiveAlarmsTable");
         private readonly ICloudRepository<ProfitAlarm> _doneAlarmRepo = new CloudRepository<ProfitAlarm>("DoneAlarmsTable");
-        //private readonly CloudQueue _alarmsQueue = QueueHelper.GetQueueReference("alarmQueue");
 
 
         private static HealthMonitoringServer healthMonitoringServer;
@@ -74,25 +76,59 @@ namespace NotificationService
             // TODO: Replace the following with your own logic.
             while (!cancellationToken.IsCancellationRequested)
             {
-                Trace.TraceInformation("[NOTIFICATION_SERVICE] Alarm processing started....");
-                await ProcessAlarmsAsync();
-                Trace.TraceInformation("[NOTIFICATION_SERVICE] Alarm processing completed....");
-                await Task.Delay(10000);
+                try
+                {
+                    Trace.TraceInformation("[NOTIFICATION_SERVICE] Alarm processing started....");
+                    await ProcessAlarmsAsync();
+                    Trace.TraceInformation("[NOTIFICATION_SERVICE] Alarm processing completed....");
+                    await Task.Delay(10000);
+                }
+                catch (Exception)
+                {
+                    Trace.TraceError("Error while proccessing alarms");
+                }
             }
         }
 
         private async Task ProcessAlarmsAsync()
         {
-            // #TODO
             // Get at most 20 alarms from table
-            var alarmsToProcess =  await _activeAlarmRepo.GetAll();
-            // Add test alarm          
+            var alarmsToProcess = await _activeAlarmRepo.GetAll();
             Trace.WriteLine(alarmsToProcess.Count());
+            List<Guid> doneAlarmIds = new List<Guid>();
+            ProfitAlarm testAlarm = new ProfitAlarm("test@test.com");
+            testAlarm.ProfitMargin = 1000;
+            testAlarm.CryptoCurrencyName = "BTC";
+            testAlarm.DateCreated = DateTime.Now;
+            alarmsToProcess.Append(testAlarm);
             // Check profit for each of them
-            foreach(var alarm in alarmsToProcess)
+            foreach (var alarm in alarmsToProcess)
             {
                 var res = await CheckProfit(alarm);
+                if (res)
+                {
+                    //await MailHelper.SendAlarmTriggered(alarm);
+                    // Perisist done alarm info
+                    await _doneAlarmRepo.Add(alarm);
+                    // Add done alarm id to list
+                    doneAlarmIds.Add(alarm.ProfitAlarmId);
+                    // Remove completed alarm froma active alarm table
+                    await _activeAlarmRepo.Delete(alarm.RowKey);
+                }
             }
+            // Enqueue done alarmIds
+            EnqueueAlarmIds(doneAlarmIds);
+        }
+
+        private void EnqueueAlarmIds(List<Guid> doneAlarmIds)
+        {
+            CloudQueue _alarmsQueue = QueueHelper.GetQueueReference("AlarmsQueue");
+            string message = "";
+            foreach (var alarmId in doneAlarmIds)
+            {
+                message += $"{alarmId}|";
+            }
+            _alarmsQueue.AddMessageAsync(new CloudQueueMessage(message));
         }
 
         private async Task<bool> CheckProfit(ProfitAlarm alarm)

@@ -2,6 +2,7 @@
 using System.Net.Mail;
 using Common.Models;
 using System.Net;
+using System.Collections.Generic;
 
 namespace NotificationService.Helpers
 {
@@ -14,7 +15,7 @@ namespace NotificationService.Helpers
         {
             return new SmtpClient("sandbox.smtp.mailtrap.io", 2525)
             {
-                Credentials = new NetworkCredential("a0ea78ef0ee92f", "caa09a7c5e7c96"),
+                Credentials = new NetworkCredential("a59253fc1f3996", "2612348feba4a3"),
                 EnableSsl = true
             };
         }
@@ -27,12 +28,19 @@ namespace NotificationService.Helpers
                     $"Cryptocurrency {alarm.CryptoCurrencyName} exceeded profit margin of {alarm.ProfitMargin}");
             }
         }
-        public static async Task SendServiceDown(string email, string serviceName)
+        public static async Task SendServiceDown(List<string> adminEmails, string serviceName)
         {
             using (var client = Connect())
             {
-                await client.SendMailAsync("admin@portfolioservice.com", email, $"!!!! {serviceName} is DOWN!!!!",
-                $"It seems that {serviceName} is currently down!!!");
+                MailMessage mailMessage = new MailMessage();
+                mailMessage.Sender = new MailAddress("service-down@portofilioservice.com");
+                mailMessage.Subject = $"!!!!! {serviceName} is currently down !!!!!!";
+                mailMessage.Body = $"{serviceName} is currently down";
+                foreach(string email in adminEmails)
+                {
+                    mailMessage.To.Add(new MailAddress(email));
+                }
+                await client.SendMailAsync(mailMessage);
             }
         }
 
