@@ -85,6 +85,10 @@ namespace PortfolioService.Controllers
             {
                 if(transaction.TransactionType == "Sale")
                 {
+                    if(existingEntry.Amount <transaction.Amount)
+                    {
+                        throw new ArgumentException($"You don't have enough amount of {transaction.CryptoName} currency");
+                    }
                     existingEntry.UpdateOnSale(transaction.Amount, transaction.Price);
                 }
                 else if(transaction.TransactionType == "Purchase")

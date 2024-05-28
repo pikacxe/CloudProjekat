@@ -22,13 +22,6 @@ namespace Common.Repositories
             CloudTableClient tableClient = new CloudTableClient(new Uri(_storageAccount.TableEndpoint.AbsoluteUri), _storageAccount.Credentials);
             _table = tableClient.GetTableReference(tableName);
             _table.CreateIfNotExists();
-
-            if (typeof(T) == typeof(HealthCheckInfo))
-            {
-                ClearTable().Wait(); 
-            }
-
-
         }
 
         private async Task ClearTable()

@@ -17,7 +17,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.CryptoName, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.CryptoName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.CryptoName, new { htmlAttributes = new { @class = "form-control", required = "required" } })
             @Html.ValidationMessageFor(model => model.CryptoName, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -25,7 +25,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", required = "required", min = "1",type="number"} })
             @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -33,7 +33,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control", required = "required", min = "1",type="number"} })
             @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -41,7 +41,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control", required = "required" } })
             @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
         </div>
     </div>
