@@ -1,15 +1,21 @@
 ﻿using Common.DTOs;
+using Common.Helpers;
 using Common.Models;
 using Common.Repositories;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Queue;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 
 namespace PortfolioService.Controllers
 {
@@ -19,7 +25,7 @@ namespace PortfolioService.Controllers
         ICloudRepository<UserPortfolioEntry> _userEntriesRepository = new CloudRepository<UserPortfolioEntry>("PortfolioEntry");
         ICloudRepository<ProfitAlarm> _alarmRepo = new CloudRepository<ProfitAlarm>("ActiveAlarmsTable");
         ICloudRepository<ProfitAlarm> _doneAlarmRepo = new CloudRepository<ProfitAlarm>("DoneAlarmsTable");
-        public static string DoneAlarms { get; set;}
+        public static List<string> ids = new List<string>();
         public async Task<ActionResult> Index()
         {
             var email = Session["LoggedInUserEmail"].ToString();
@@ -27,22 +33,38 @@ namespace PortfolioService.Controllers
             {
                 return View("Login");
             }
-            ViewBag.DoneAlarms = DoneAlarms;
             var entries = await _userEntriesRepository.GetAll(x => x.PartitionKey == email);
             UserPortfolio up = new UserPortfolio(entries);
             await up.CalculateTotals();
-            return View("Index",up);
+            return View("Index", up);
         }
+
 
         public async Task<ActionResult> AlarmsView()
         {
-            if (DoneAlarms == null)
+            try
             {
-                return View("AlarmsView", Enumerable.Empty<ProfitAlarm>());
+
+                CloudQueue queue = QueueHelper.GetQueueReference("alarmsqueue");
+                CloudQueueMessage message = queue.GetMessage();
+                if (message == null)
+                {
+                    Trace.TraceInformation("No messages in queue.", "Information");
+                }
+                else
+                {
+                    Trace.TraceInformation($"Queue message: {message.AsString}");
+                    string doneAlarms = message.AsString;
+                    ids = doneAlarms.TrimStart('|').Split('|').ToList();
+                    queue.DeleteMessage(message);
+                }
             }
-            string[] ids = DoneAlarms.TrimStart('|').Split('|');
+            catch (Exception ex)
+            {
+                Trace.TraceError(ex.Message);
+            }
             string email = Session["LoggedInUserEmail"].ToString();
-            IEnumerable<ProfitAlarm> alarms = await _doneAlarmRepo.GetAll(x=>x.PartitionKey==email);
+            IEnumerable<ProfitAlarm> alarms = await _doneAlarmRepo.GetAll(x => x.PartitionKey == email);
             return View("AlarmsView", alarms);
         }
 
@@ -82,7 +104,7 @@ namespace PortfolioService.Controllers
 
         public async Task<ActionResult> UpdateProfile()
         {
-            string loggedInUserEmail = Session["LoggedInUserEmail"].ToString(); 
+            string loggedInUserEmail = Session["LoggedInUserEmail"].ToString();
             var existingUser = await _cloudRepository.Get(loggedInUserEmail);
 
             if (existingUser != null)
@@ -156,12 +178,12 @@ namespace PortfolioService.Controllers
         public async Task<ActionResult> LogIn(string email, string password)
         {
             var existingUser = await _cloudRepository.Get(email);
-            if(existingUser != null && existingUser.Password == password)
+            if (existingUser != null && existingUser.Password == password)
             {
                 Session["LoggedInUserEmail"] = existingUser.Email;
                 return RedirectToAction("Index");
             }
-           
+
             return RedirectToAction("LogIn");
         }
 
@@ -183,8 +205,8 @@ namespace PortfolioService.Controllers
                     existingUser.Email = receivedUser.Email;
                     existingUser.RowKey = receivedUser.Email;
                     existingUser.Password = receivedUser.Password;
-                   // existingUser.Picture = receivedUser.Picture;
-                    
+                    // existingUser.Picture = receivedUser.Picture;
+
 
                     await _cloudRepository.Update(existingUser);
                 }

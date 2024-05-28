@@ -100,6 +100,7 @@ namespace NotificationService
             // Check profit for each of them
             foreach (var alarm in alarmsToProcess)
             {
+                Trace.WriteLine("Alarm: "+alarm.ToString());
                 var res = await CheckProfit(alarm);
                 if (res)
                 {
@@ -124,7 +125,10 @@ namespace NotificationService
             {
                 message += $"|{alarmId}";
             }
-            await _alarmsQueue.AddMessageAsync(new CloudQueueMessage(message));
+            if(message != "")
+            {
+                await _alarmsQueue.AddMessageAsync(new CloudQueueMessage(message));
+            }
         }
 
         private async Task<bool> CheckProfit(ProfitAlarm alarm)
