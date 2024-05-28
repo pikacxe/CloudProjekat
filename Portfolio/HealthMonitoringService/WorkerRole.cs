@@ -104,22 +104,15 @@ namespace HealthMonitoringService
 
             await _healthCheckRepository.Add(portfolioHealthCheck);
             await _healthCheckRepository.Add(notificationHealthCheck);
-            if (portfolioHealthCheck.Message.Contains("WARNING"))
-            {
-                await MailHelper.SendServiceDown(AdminConsoleServiceProvider.adminEmails, "'Portfolio service'");
-            }
-            if (notificationHealthCheck.Message.Contains("WARNING"))
-            {
-                await MailHelper.SendServiceDown(AdminConsoleServiceProvider.adminEmails, "'Notification service'");
+            //if (portfolioHealthCheck.Message.Contains("WARNING"))
+            //{
+            //    await MailHelper.SendServiceDown(AdminConsoleServiceProvider.adminEmails, "'Portfolio service'");
+            //}
+            //if (notificationHealthCheck.Message.Contains("WARNING"))
+            //{
+            //    await MailHelper.SendServiceDown(AdminConsoleServiceProvider.adminEmails, "'Notification service'");
 
-            }
-
-            /// Send the message to the NotificationService
-            /// Maybe the implementation of sending email is better here
-
-            //CloudQueue queue = QueueHelper.GetQueueReference("HealthCheckQueue");
-            //queue.AddMessage(new CloudQueueMessage(portfolioHealthCheck.Message));
-
+            //}
         }
 
         public override void OnStop()

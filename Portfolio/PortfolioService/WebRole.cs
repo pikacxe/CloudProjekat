@@ -29,22 +29,21 @@ namespace PortfolioService
         {
             try
             {
-                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("DataConnectionString"));
-                CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-                CloudQueue queue = queueClient.GetQueueReference("AlarmsQueue");
+                
+                CloudQueue queue = QueueHelper.GetQueueReference("alarmsqueue");
                 while (true)
                 {
-                    //CloudQueueMessage message = queue.GetMessage();
-                    //if (message == null)
-                    //{
-                    //    Trace.TraceInformation("No messages in queue.", "Information");
-                    //}
-                    //else
-                    //{
-                    //    Trace.TraceInformation($"Queue message: {message.AsString}");
+                    CloudQueueMessage message = queue.GetMessage();
+                    if (message == null)
+                    {
+                        Trace.TraceInformation("No messages in queue.", "Information");
+                    }
+                    else
+                    {
+                        Trace.TraceInformation($"Queue message: {message.AsString}");
 
-                    //    queue.DeleteMessage(message);
-                    //}
+                        queue.DeleteMessage(message);
+                    }
 
                     Thread.Sleep(5000);
                     Trace.TraceInformation("Working", "Information");
@@ -55,6 +54,7 @@ namespace PortfolioService
                 Trace.TraceError(ex.Message);
             }
         }
+
         public override void OnStop()
         {
             healthMonitoringServer.Close();

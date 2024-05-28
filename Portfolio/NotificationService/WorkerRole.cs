@@ -100,7 +100,7 @@ namespace NotificationService
             testAlarm.ProfitMargin = 1000;
             testAlarm.CryptoCurrencyName = "BTC";
             testAlarm.DateCreated = DateTime.Now;
-            alarmsToProcess.Append(testAlarm);
+            alarmsToProcess=alarmsToProcess.Append(testAlarm);
             // Check profit for each of them
             foreach (var alarm in alarmsToProcess)
             {
@@ -113,22 +113,22 @@ namespace NotificationService
                     // Add done alarm id to list
                     doneAlarmIds.Add(alarm.ProfitAlarmId);
                     // Remove completed alarm froma active alarm table
-                    await _activeAlarmRepo.Delete(alarm.RowKey);
+                    //await _activeAlarmRepo.Delete(alarm.RowKey);
                 }
             }
             // Enqueue done alarmIds
-            EnqueueAlarmIds(doneAlarmIds);
+            await EnqueueAlarmIdsAsync(doneAlarmIds);
         }
 
-        private void EnqueueAlarmIds(List<Guid> doneAlarmIds)
+        private async Task EnqueueAlarmIdsAsync(List<Guid> doneAlarmIds)
         {
-            CloudQueue _alarmsQueue = QueueHelper.GetQueueReference("AlarmsQueue");
+            CloudQueue _alarmsQueue = QueueHelper.GetQueueReference("alarmsqueue");
             string message = "";
             foreach (var alarmId in doneAlarmIds)
             {
                 message += $"{alarmId}|";
             }
-            _alarmsQueue.AddMessageAsync(new CloudQueueMessage(message));
+            await _alarmsQueue.AddMessageAsync(new CloudQueueMessage(message));
         }
 
         private async Task<bool> CheckProfit(ProfitAlarm alarm)
