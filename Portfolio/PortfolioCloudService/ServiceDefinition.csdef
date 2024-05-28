@@ -31,6 +31,9 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="DataConnectionString" />
     </ConfigurationSettings>
+    <Endpoints>
+      <InputEndpoint name="admin-console" protocol="tcp" port="10106" />
+    </Endpoints>
   </WorkerRole>
   <WebRole name="HealthStatusService" vmsize="Standard_D1_v2">
     <Sites>

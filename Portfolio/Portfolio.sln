@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthStatusService", "Heal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{6F44B687-FF74-4B64-9FBB-092E64E29DA0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminConsoleApp", "AdminConsoleApp\AdminConsoleApp.csproj", "{716A33D2-E1B5-4318-BFF5-77F52BA7219F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{6F44B687-FF74-4B64-9FBB-092E64E29DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F44B687-FF74-4B64-9FBB-092E64E29DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F44B687-FF74-4B64-9FBB-092E64E29DA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{716A33D2-E1B5-4318-BFF5-77F52BA7219F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{716A33D2-E1B5-4318-BFF5-77F52BA7219F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{716A33D2-E1B5-4318-BFF5-77F52BA7219F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{716A33D2-E1B5-4318-BFF5-77F52BA7219F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
